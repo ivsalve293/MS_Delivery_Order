@@ -2890,12 +2890,12 @@ function buildDeliveryOrderCSV(data){
       const sd = (sdMap && Number.isFinite(+sdMap[size])) ? +sdMap[size] : 0;
 
       const isNC = (billType === "NC");
-      // Calc logic
-      const base = sauda + sd + 160 - (isNC ? 3000 : 0) + freight;
+      // Calc logic (UPDATED CONSTANT TO 255)
+      const base = sauda + sd + 255 - (isNC ? 3000 : 0) + freight;
       const finalRate = Math.round(base * 1.18);
       
-      // ✅ Breakdown Text: Sauda + SD - 3000(if NC) + 160 + Freight + 18%
-      const bd = `${sauda} + ${sd}${isNC ? " - 3000" : ""} + 160 + ${freight} + 18%`;
+      // Breakdown Text (UPDATED CONSTANT TO 255)
+      const bd = `${sauda} + ${sd}${isNC ? " - 3000" : ""} + 255 + ${freight} + 18%`;
 
       return { rate: finalRate, bd };
     }
