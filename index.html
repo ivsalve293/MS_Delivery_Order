@@ -13,11 +13,12 @@
     
     /* --- BACKGROUND & ANIMATION --- */
     body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; color:var(--text); font-size: var(--fs-body); line-height: 1.5; overflow-x:hidden; background: radial-gradient(900px 500px at 10% 0%, rgba(220,38,38,.14), transparent 60%), radial-gradient(700px 500px at 100% 10%, rgba(239,68,68,.10), transparent 55%), radial-gradient(900px 600px at 50% 110%, rgba(220,38,38,.08), transparent 60%), linear-gradient(180deg, #ffffff 0%, var(--bg) 55%, #ffffff 100%); 
-    /* Padding bottom for fixed action bar */
-    padding-bottom: 100px; }
+    /* Removed padding-bottom from body, moved to .wrap */
+    }
     
     /* --- LAYOUT & FIXED HEADER --- */
-    .wrap{max-width:var(--page-max); margin:0 auto; padding: 94px 14px 20px;}
+    /* UPDATED PADDING-BOTTOM TO 140px TO CLEAR FIXED BUTTONS */
+    .wrap{max-width:var(--page-max); margin:0 auto; padding: 94px 14px 140px;}
     
     .topbar{ position: fixed; top: 0; left: 0; right: 0; height: 74px; z-index: 1000; background: rgba(255,255,255,.98); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(220,38,38,.12); }
     .topbar-inner{ max-width:var(--page-max); margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 14px; gap:12px; height: 100%; }
@@ -389,7 +390,7 @@
       const isNC = (billType === "NC");
       const applyDeduction = isNC && (item !== "Binding Wire" && item !== "Nails");
       const base = saudaRate + sd + 255 - (applyDeduction ? 3000 : 0) + freight + ob;
-      return { rate: Math.round(base * 1.18), bd: `${saudaRate} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${freight}${ob ? ` + ${ob}` : ""} + 18%` };
+      return { rate: Math.round(base * 1.18), bd: `${saudaRate} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${freight}${ob ? ` + ${ob}(OB)` : ""} + 18%` };
     }
 
     function calcReverse(netRate, sd, billType, freight, ob, item) {
@@ -554,7 +555,7 @@
               const sd = (sdMap && Number.isFinite(+sdMap[size])) ? +sdMap[size] : 0;
               const newSauda = calcReverse(netRate, sd, getGlobalBillType(), getFreight(), getOB(), item);
               block.querySelector('.block-sauda-input').value = newSauda;
-              block.querySelectorAll('.size-row').forEach(otherRow => { if(otherRow !== tr) recalcRow(otherRow); else { const applyDeduction = (getGlobalBillType() === "NC" && item !== "Binding Wire" && item !== "Nails"); tr.querySelector('.bd-input').value = `${newSauda} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${getFreight()}${getOB() ? ` + ${getOB()}` : ""} + 18%`; } });
+              block.querySelectorAll('.size-row').forEach(otherRow => { if(otherRow !== tr) recalcRow(otherRow); else { const applyDeduction = (getGlobalBillType() === "NC" && item !== "Binding Wire" && item !== "Nails"); tr.querySelector('.bd-input').value = `${newSauda} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${getFreight()}${getOB() ? ` + ${getOB()}(OB)` : ""} + 18%`; } });
            }
            saveSoon();
         }
