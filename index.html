@@ -13,8 +13,8 @@
     
     /* --- BACKGROUND & ANIMATION --- */
     body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; color:var(--text); font-size: var(--fs-body); line-height: 1.5; overflow-x:hidden; background: radial-gradient(900px 500px at 10% 0%, rgba(220,38,38,.14), transparent 60%), radial-gradient(700px 500px at 100% 10%, rgba(239,68,68,.10), transparent 55%), radial-gradient(900px 600px at 50% 110%, rgba(220,38,38,.08), transparent 60%), linear-gradient(180deg, #ffffff 0%, var(--bg) 55%, #ffffff 100%); 
-    /* Padding bottom for mobile action bar */
-    padding-bottom: 90px; }
+    /* Padding bottom for fixed action bar */
+    padding-bottom: 100px; }
     
     /* --- LAYOUT & FIXED HEADER --- */
     .wrap{max-width:var(--page-max); margin:0 auto; padding: 94px 14px 20px;}
@@ -30,17 +30,46 @@
     .pill{ display:inline-flex;align-items:center;gap:8px; padding:7px 10px;border-radius:999px; background: rgba(255,255,255,.92); border:1px solid rgba(220,38,38,.14); box-shadow: var(--shadow-sm); font-size:12px;color:var(--muted); white-space:nowrap; margin-left: auto; }
     .dot{width:8px;height:8px;border-radius:999px;background:var(--ok);box-shadow:0 0 0 4px rgba(22,163,74,.12);} .dot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(245,158,11,.14);} .dot.danger{background:var(--danger);box-shadow:0 0 0 4px rgba(239,68,68,.14);}
 
-    /* --- ACTIONS (BUTTONS) --- */
-    .actions{display:flex;align-items:center;gap:8px;}
+    /* --- FIXED BOTTOM ACTION BAR --- */
+    .actions-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(220,38,38,0.1);
+        padding: 12px 16px;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        z-index: 2000;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+    }
     
-    .btn{ border:1px solid rgba(220,38,38,.14); background:rgba(255,255,255,.92); color:var(--text); padding:10px 14px; border-radius:999px; font-weight:900; font-size:13px; cursor:pointer; transition: transform .16s var(--ease); box-shadow: var(--shadow-sm); display:inline-flex; align-items:center; gap:8px; min-height:40px; user-select:none; white-space: nowrap; }
+    @media (max-width: 640px) {
+        .actions-bar {
+            justify-content: flex-start;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 12px 16px;
+        }
+        /* Hide scrollbar */
+        .actions-bar::-webkit-scrollbar { display: none; }
+        .btn { flex-shrink: 0; }
+    }
+
+    .btn{ border:1px solid rgba(220,38,38,.14); background:rgba(255,255,255,.92); color:var(--text); padding:10px 18px; border-radius:999px; font-weight:900; font-size:13px; cursor:pointer; transition: transform .16s var(--ease); box-shadow: var(--shadow-sm); display:inline-flex; align-items:center; gap:8px; min-height:42px; user-select:none; white-space: nowrap; position: relative; overflow: hidden; }
     .btn:hover{transform:translateY(-1px);box-shadow: var(--shadow);} .btn:active{transform:translateY(0px) scale(.99);}
     .btn.primary{ border-color:transparent; background: linear-gradient(90deg,var(--brand),var(--brand2)); color:white; box-shadow: 0 18px 44px rgba(220,38,38,.24); }
     .btn.secondary{background: rgba(255,255,255,.92);border-color: rgba(220,38,38,.20);}
     .btn.ghost{background:transparent;box-shadow:none;border-color:rgba(220,38,38,.12);color:#374151;} 
     
+    /* RIPPLE ANIMATION STYLES */
+    span.ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: ripple 0.6s linear; background-color: rgba(220, 38, 38, 0.2); pointer-events: none; }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+    
     /* --- LAYOUT GRID (DESKTOP) --- */
-    /* This sets Main first (1fr) and Sidebar second (320px) */
     .layout{ display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:start; margin-top:16px; } 
 
     /* --- SIDEBAR --- */
@@ -48,60 +77,18 @@
     
     /* --- RESPONSIVE MOBILE STYLES --- */
     @media (max-width: 980px) {
-        /* 1. Fix Actions to Bottom */
-        .actions {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-            z-index: 2000;
-            border-top: 1px solid rgba(220,38,38,.1);
-            justify-content: flex-start;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .actions::-webkit-scrollbar { display: none; }
-        .btn { flex-shrink: 0; padding: 10px 18px; }
-
-        /* 2. REORDER LAYOUT */
-        .layout { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 16px; 
-        }
-
-        /* Unwrap sidebar so its children become direct flex items of .layout */
-        .sidebar-wrapper { 
-            display: contents; 
-        }
-
-        /* Order -1 moves to Top */
-        #globalSettings { 
-            order: -1; 
-            width: 100%; 
-            margin-bottom: 4px; 
-        }
-
-        /* Order 0 is Default (Middle) */
-        main { 
-            order: 0; 
-            width: 100%; 
-        }
-
-        /* Order 1 moves to Bottom */
-        .summary.card { 
-            order: 1; 
-            width: 100%; 
-            margin-top: 4px; 
-        }
-        
+        .layout { display: flex; flex-direction: column; gap: 16px; }
+        .sidebar-wrapper { display: contents; }
+        #globalSettings { order: -1; width: 100%; margin-bottom: 4px; }
+        main { order: 0; width: 100%; }
+        .summary.card { order: 1; width: 100%; margin-top: 4px; }
         .pill span#statusText { display: none; }
         .pill { margin-right: 0; }
+    }
+    
+    /* Stack grid fields on very small screens */
+    @media (max-width: 600px) {
+        .field, .field.span-3 { grid-column: span 12 !important; }
     }
 
     /* --- GRID & CARDS --- */
@@ -145,7 +132,7 @@
     .block-body{padding:0;background:#fff;} .size-table{width:100%; border-collapse: collapse;}
     .size-table th{ font-size: 11px; text-transform: uppercase; color: #6b7280; text-align:left; padding: 8px 16px; border-bottom: 1px solid #eee; background: #fafafa; } .size-table td{padding: 8px 16px; vertical-align: top; border-bottom: 1px solid #f9fafb;}
     .row-actions{ display:flex; gap:8px; padding: 12px 16px; background:#fafafa; border-top: 1px solid #eee; justify-content:flex-start; }
-    .icon-btn{ width: 32px; height: 32px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #ef4444; display:grid; place-items:center; cursor:pointer; flex: 0 0 auto; } .icon-btn:hover{background:#fef2f2;}
+    .icon-btn{ width: 32px; height: 32px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #ef4444; display:grid; place-items:center; cursor:pointer; flex: 0 0 auto; position: relative; overflow: hidden;} .icon-btn:hover{background:#fef2f2;}
     
     /* --- LOADER --- */
     #loaderOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
@@ -155,13 +142,14 @@
     .print-only{display:none;} #printTableLayout{display:none;}
     @media print{ 
         @page { size: A4 portrait; margin: 5mm; } 
-        body { background:#fff !important; margin:0; padding:0; font-size: 11px; padding-bottom:0; } 
-        .topbar, .actions, .summary, .toast, .no-print, .add-item-bar, #loaderOverlay, #globalSettings { display:none !important; } 
+        /* FIX FOR BLANK PAGE 2: Set height to auto and hidden overflow */
+        body { background:#fff !important; margin:0; padding:0; font-size: 11px; padding-bottom:0; height: auto !important; overflow: hidden !important; } 
+        .topbar, .actions-bar, .summary, .toast, .no-print, .add-item-bar, #loaderOverlay, #globalSettings { display:none !important; } 
         .wrap { max-width:none; margin:0; padding:0; } 
         .layout { grid-template-columns:1fr; gap:0; display:block; } 
         main { display:none !important; } 
         .print-only { display:block !important; } 
-        #printTableLayout { display:block; } 
+        #printTableLayout { display:block; overflow: hidden; } 
     }
     .do-page{width:100%;--print-scale:1;transform:scale(var(--print-scale));transform-origin:top left;} .do-title{text-align:center;font-weight:700;font-size:20px;margin:2mm 0 3mm;}
     .do-table{width:100%;border-collapse:collapse;table-layout:fixed;} .do-table td,.do-table th{border:1px solid #000;padding:4px 5px;vertical-align:top;font-size:11px;}
@@ -189,14 +177,6 @@
       </div>
       
       <div class="pill" id="savePill" title="Autosave status"><span class="dot" id="statusDot"></span><span id="statusText">Draft</span></div>
-
-      <div class="actions">
-        <button class="btn ghost" type="button" data-action="reset">🧹 Reset</button>
-        <button class="btn secondary" type="button" data-action="exportCsv">⬇️ CSV</button>
-        <button class="btn secondary" type="button" data-action="sharePdf">📤 Share PDF</button>
-        <button class="btn secondary" type="button" data-action="copySummary">📋 Copy</button>
-        <button class="btn primary" type="button" data-action="print">🖨️ Print</button>
-      </div>
     </div>
   </div>
 
@@ -210,12 +190,13 @@
               <div class="grid">
                 <div class="field span-3"><label for="poNo">P O Order No.</label><input id="poNo" /></div>
                 <div class="field span-3"><label for="poDate">P O Date</label><input type="date" id="poDate" style="background:#fff" /></div>
-                
                 <div class="field"><label for="dealerName">Dealer Name <span class="req">*</span></label><input id="dealerName" required /><p class="error" id="err-dealerName"></p></div>
+                
                 <div class="field"><label for="billingName">Billing Name <span class="req">*</span></label><input id="billingName" required /><p class="error" id="err-billingName"></p></div>
-                <div class="field span-12"><label for="billingAddress">Billing Address <span class="req">*</span></label><textarea id="billingAddress" rows="3" required></textarea><p class="error" id="err-billingAddress"></p></div>
-                <div class="field span-12"><label for="consigneeName">Consignee Name</label><input id="consigneeName" /></div>
-                <div class="field span-12"><label for="dispatchAddress">Shipping Address</label><textarea id="dispatchAddress" rows="3"></textarea></div>
+                <div class="field"><label for="billingAddress">Billing Address <span class="req">*</span></label><textarea id="billingAddress" rows="2" required></textarea><p class="error" id="err-billingAddress"></p></div>
+                
+                <div class="field"><label for="consigneeName">Consignee Name</label><input id="consigneeName" /></div>
+                <div class="field"><label for="dispatchAddress">Shipping Address</label><textarea id="dispatchAddress" rows="2"></textarea></div>
               </div>
             </section>
 
@@ -259,6 +240,14 @@
       <div class="do-title">Delivery Order</div>
       <div id="printDump"></div>
     </div>
+  </div>
+
+  <div class="actions-bar no-print">
+    <button class="btn ghost" type="button" data-action="reset">🧹 Reset</button>
+    <button class="btn secondary" type="button" data-action="exportCsv">⬇️ CSV</button>
+    <button class="btn secondary" type="button" data-action="shareWhatsapp" style="background:#25D366; color:white; border:none;">📱 Share WA</button>
+    <button class="btn secondary" type="button" data-action="copySummary">📋 Copy</button>
+    <button class="btn primary" type="button" data-action="print">🖨️ Print</button>
   </div>
 
   <div class="toast" id="toast"><span id="toastText">Action done</span></div>
@@ -400,7 +389,7 @@
       const isNC = (billType === "NC");
       const applyDeduction = isNC && (item !== "Binding Wire" && item !== "Nails");
       const base = saudaRate + sd + 255 - (applyDeduction ? 3000 : 0) + freight + ob;
-      return { rate: Math.round(base * 1.18), bd: `${saudaRate} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${freight}${ob ? ` + ${ob}(OB)` : ""} + 18%` };
+      return { rate: Math.round(base * 1.18), bd: `${saudaRate} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${freight}${ob ? ` + ${ob}` : ""} + 18%` };
     }
 
     function calcReverse(netRate, sd, billType, freight, ob, item) {
@@ -565,7 +554,7 @@
               const sd = (sdMap && Number.isFinite(+sdMap[size])) ? +sdMap[size] : 0;
               const newSauda = calcReverse(netRate, sd, getGlobalBillType(), getFreight(), getOB(), item);
               block.querySelector('.block-sauda-input').value = newSauda;
-              block.querySelectorAll('.size-row').forEach(otherRow => { if(otherRow !== tr) recalcRow(otherRow); else { const applyDeduction = (getGlobalBillType() === "NC" && item !== "Binding Wire" && item !== "Nails"); tr.querySelector('.bd-input').value = `${newSauda} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${getFreight()}${getOB() ? ` + ${getOB()}(OB)` : ""} + 18%`; } });
+              block.querySelectorAll('.size-row').forEach(otherRow => { if(otherRow !== tr) recalcRow(otherRow); else { const applyDeduction = (getGlobalBillType() === "NC" && item !== "Binding Wire" && item !== "Nails"); tr.querySelector('.bd-input').value = `${newSauda} + ${sd}${applyDeduction ? " - 3000" : ""} + 255 + ${getFreight()}${getOB() ? ` + ${getOB()}` : ""} + 18%`; } });
            }
            saveSoon();
         }
@@ -644,6 +633,28 @@
         txt += `\n*Total: ${tQty.toFixed(3)} MT*`; 
         navigator.clipboard.writeText(txt).then(() => showToast("Summary copied")); 
       }
+      
+      // --- NEW WHATSAPP SHARE FEATURE ---
+      if(action === "shareWhatsapp"){
+        const data = collectData();
+        let txt = `*Steel Mart DO*\nDate: ${data.orderDate}\nDealer: ${data.dealerName}\n\n*Details*\n`;
+        let idx = 1; let tQty = 0;
+        data.items.forEach(block => { 
+            (block.sizes || []).forEach(s => { 
+                const q = parseFloat(s.qty)||0; 
+                if(block.item && q > 0) { 
+                    txt += `${idx++}. ${block.item} ${s.size} - ${q.toFixed(3)} MT\n`; 
+                    tQty += q; 
+                } 
+            }); 
+        });
+        txt += `\n*Total: ${tQty.toFixed(3)} MT*`;
+        
+        // Open WhatsApp with the text
+        const url = `https://wa.me/?text=${encodeURIComponent(txt)}`;
+        window.open(url, '_blank');
+      }
+
       if(action === "exportCsv"){
         const data = collectData(); const csvCell=v=>`"${String(v||"").replace(/"/g,'""')}"`;
         const lines = [csvCell("Delivery Order"),"",`Dealer Name,${csvCell(data.dealerName)}`,`Billing Name,${csvCell(data.billingName)}`,`Date,${csvCell(data.orderDate)}`,`Bill Type,${csvCell(data.billType)}`,`Lorry No,${csvCell(data.lorryNo)}`,"", "Item,Rate"];
@@ -689,7 +700,27 @@
       const poNo=escHtml(data.poNo||""); const poDate=isoToDDMMYYYY(data.poDate||""); const consigneeName=escHtml(data.consigneeName||""); const shippingAddress=escHtml(data.dispatchAddress||"").replaceAll("\n","<br>");
       const note=(data.note||"").trim(); const signedBy=escHtml(data.signedBy||""); const approvedBy=escHtml(data.approvedBy||"");
       const saudaTableHTML = buildSaudaTableHTML(data); const {rows:mainRows, totalRow}=buildMainRows(data);
-      const noteSection = note ? `<table class="do-table do-note" style="margin-top:3mm;"><tr><td class="do-label do-center" style="width:10%;font-weight:700;">Note:</td><td style="width:90%;">${escHtml(note).replaceAll("\n","<br>")}</td></tr></table>` : "";
+      
+      /* --- UPDATED NOTE LOGIC: Show text if present, else show lines for writing --- */
+      let noteContent = "";
+      if (note) {
+          noteContent = `<div style="padding:4px 0;">${escHtml(note).replaceAll("\n","<br>")}</div>`;
+      } else {
+          // Empty note? Show lines for manual writing
+          noteContent = `
+            <div style="height:24px; border-bottom:1px dashed #bbb; margin-bottom:4px;"></div>
+            <div style="height:24px; border-bottom:1px dashed #bbb; margin-bottom:4px;"></div>
+          `;
+      }
+      const noteSection = `
+        <table class="do-table do-note" style="margin-top:3mm; width:100%;">
+            <tr>
+                <td style="width:10%; font-weight:700; vertical-align:top; border:none; padding-top:8px;">Note:</td>
+                <td style="width:90%; border:none; vertical-align:top;">${noteContent}</td>
+            </tr>
+        </table>`;
+      /* -------------------------------------------------------------------------- */
+
       const saudaRow = saudaTableHTML ? `<tr><td colspan="2" style="padding:0; border-top:1px solid #000;">${saudaTableHTML}</td></tr>` : "";
 
       return `
@@ -728,7 +759,25 @@
       ${noteSection}<table class="do-table do-sign" style="margin-top:3mm;"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><tr><td><div style="font-weight:700;">Order Signed</div><div style="margin-top:10mm;">${signedBy||"&nbsp;"}</div></td><td><div style="font-weight:700;">Approved By</div><div style="margin-top:10mm;">${approvedBy||"&nbsp;"}</div></td></tr></table>`;
     }
 
-    function applyPrintScale(){ const page=document.getElementById("printTableLayout"); if(!page) return; page.style.setProperty("--print-scale","1"); const availablePx=1085; const h=page.getBoundingClientRect().height; if(h>0){ const s=Math.min(1, availablePx/h); page.style.setProperty("--print-scale", String(s)); } }
+    // FIX FOR BLANK PAGE: Explicitly calculate height and set it on the element
+    function applyPrintScale(){ 
+        const page=document.getElementById("printTableLayout"); 
+        if(!page) return; 
+        page.style.setProperty("--print-scale","1"); 
+        page.style.height = "auto"; // Reset height to recalculate
+        
+        const availablePx=1085; // A4 height roughly in pixels at 96dpi minus margins
+        const h=page.getBoundingClientRect().height; 
+        
+        if(h>0){ 
+            const s=Math.min(1, availablePx/h); 
+            page.style.setProperty("--print-scale", String(s)); 
+            
+            // CRITICAL FIX: Set the container height to the scaled height
+            // This prevents the browser from reserving the full unscaled space
+            page.style.height = (h * s) + "px"; 
+        } 
+    }
     function preparePrintAndScale(){ recalcAll(); document.getElementById("printDump").innerHTML = buildPrintLayout(collectData()); requestAnimationFrame(applyPrintScale); }
     window.addEventListener("beforeprint", ()=>{ try{preparePrintAndScale();}catch(e){} });
 
