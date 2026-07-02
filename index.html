@@ -523,7 +523,7 @@
       throw new Error("API URL not configured.");
     }
 
-    const response = await fetch(SHEET_API_URL + "?t=" + Date.now(), { cache: "no-store" });
+    const response = await fetch(SHEET_API_URL + "?action=getItemSizes&t=" + Date.now(), { cache: "no-store" });
     if (!response.ok) throw new Error("Network response was not ok");
 
     const jsonResponse = await response.json();
